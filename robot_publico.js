@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Robot DLV
-// @version      1.48b
-// @description  No se estaba proporcionando el url correcto en el bouncer
+// @version      1.49b
+// @description  Sin maldiciones
 // @author       laurentum
 // @match        https://freebitco.in/*
 // @grant        none
@@ -12,7 +12,7 @@
 (function() {
 	'use strict';
 
-	var version="1.48b";
+	var version="1.49b";
 
 	// función para consultar tiempo restante hasta próximo roll
 	function tiemporestante(){
@@ -203,7 +203,7 @@
 	var bloqueo_ip=$('#free_play_error').is(':visible');
 	var estado_captcha="";
 	var color_robot="#054908";
-	if (hay_captcha) {estado_captcha="¡Maldita captcha! Reportando a mi amo..."; color_robot="#a40000";}
+	if (hay_captcha) {estado_captcha="¡Fokin Captcha! Reportando a mi amo..."; color_robot="#a40000";}
 	if (timer_running) {estado_captcha="El reloj está corriendo. Reportando a mi amo..."; color_robot="#a40000";}
 	if (!timer_running & !hay_captcha) {
 		estado_captcha="Voy a cobrar el chorrito";
