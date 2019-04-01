@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Robot DLV
-// @version      1.49b
-// @description  Sin maldiciones
+// @version      1.51b
+// @description  Cambiaron el titulo y se corrigió la función tiemporestante
 // @author       laurentum
 // @match        https://freebitco.in/*
 // @grant        none
@@ -12,12 +12,12 @@
 (function() {
 	'use strict';
 
-	var version="1.49b";
+	var version="1.51b";
 
 	// función para consultar tiempo restante hasta próximo roll
 	function tiemporestante(){
 		var tR={};
-		tR.texto = $('title').text().replace("FreeBitco.in - Free Bitcoin Wallet, Faucet, Lottery and Dice!","");
+		tR.texto = $('title').text().replace("FreeBitco.in - Bitcoin, Bitcoin Price, Free Bitcoin Wallet, Faucet, Lottery and Dice!","");
 		tR.texto = tR.texto.replace("- FreeBitco.in - Win free bitcoins every hour!", "");
 		if (tR.texto!=="") {
 			tR.minuto = parseInt(tR.texto.split(":")[0]);
@@ -97,10 +97,10 @@
 						setTimeout(function(){$('.close-reveal-modal').click();},1000);
 					}
 				},timeout+12000); // cierra la ventana de dialogo pop-up 12 segundos despues de jugar el chorrito
-				setTimeout(function(){location.reload(true);},timeout+3601000); //obliga a hacer un refrescamiento de la pagina en una hora
+				setTimeout(function(){location.reload(true);},timeout+3610000); //obliga a hacer un refrescamiento de la pagina en una hora
 				Reportar(estatus_reporte); // manda el reporte cada hora
 			} else {
-				setTimeout(function(){location.reload();},3600000); // nos vemos en una hora.
+				setTimeout(function(){location.reload();},3610000); // nos vemos en una hora.
 				if (hay_captcha) estatus_reporte="Balance al día (captcha)";
 				if (timer_running) estatus_reporte="Balance al día (timer running)";
 				if (bloqueo_ip) estatus_reporte="Balance al día (bloqueo ip)";
