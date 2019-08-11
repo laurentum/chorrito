@@ -190,4 +190,4 @@
 		else {estado_captcha+=" y también voy a activar bonos (si tengo suficientes RP).";}
 	}
  	setTimeout(accion_principal,2000); // espera 2 seg para ver si está autorizado o no y ejecuta el resto.
-},500))();
+},5000))();
