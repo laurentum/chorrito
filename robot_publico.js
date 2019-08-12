@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Robot DLV
-// @version      1.52b
+// @version      1.55b
 // @description  Se ha eliminado dependencia de jQuery
 // @author       laurentum
 // @match        https://freebitco.in/*
@@ -11,7 +11,7 @@
 
 (function() {
 	'use strict';
-    var version="1.52b";
+    var version="1.55b";
 
 	  // función para consultar tiempo restante hasta próximo roll
 	  function tiemporestante(){
@@ -56,7 +56,7 @@
 	// Se ejecuta 2 seg después esperando los resultados del rebote
 	
 	function accion_principal() {
-    ventanita=document.createElement('DIV');
+    var ventanita=document.createElement('DIV');
     ventanita.style["position"]="fixed";
     ventanita.style["top"]="45px";
     ventanita.style["left"]="0";
@@ -66,17 +66,17 @@
     ventanita.style["color"]="#ffffff";
     ventanita.style["text-align"]="left";
     ventanita.id="autochorrito";
-    estilochorrito=document.createElement("STYLE");
+    var estilochorrito=document.createElement("STYLE");
     estilochorrito.innerHTML="#autochorrito p { margin: 0; margin-left: 2px;  text-align: left; }";
     document.body.appendChild(estilochorrito);
-    textoventanita="<p style='text-decoration:bold; text-align:center'>"+
+    var textoventanita="<p style='text-decoration:bold; text-align:center'>"+
       "( ͡° ͜ʖ ͡°) ╭∩╮  v."+version+"<br />"+"───────────────────────</p>";
 		if (autorizado) {
       textoventanita+="<p>"+userID+"<br />"+acct_email+"<br />"+estado+"<br />"+estado_captcha+"</p>";
 			// activa la rutina para que se ejecute repetidamente de manera asíncrona según condiciones:
 			if (!hay_captcha & !bloqueo_ip & !timer_running) {	
-				premios.rutina();  // reclama los premios de RP
 				var timeout=Math.floor(Math.random() * 60 )*1000+2000; //timeout adicional entre 2 y 62 segundos
+        setTimeout(rutina_premios(),1500);  // reclama los premios de RP
 				if (document.getElementById('free_play_form_button').style.display!=='none') {
 					console.log("Cobrando el premio.");
 					setTimeout(function(){document.getElementById('free_play_form_button').click();},timeout);
@@ -101,87 +101,79 @@
 	  // premios es un objeto con una función para activar bonos para
 	  // acrecentar rápidamente los puntos reward y cobrar el bono
 	  // de aumento premio por lanzamiento cuando tengas suficientes puntos.
-	  var premios = {};
-	  var estatus_reporte = "Balance a la hora";
-	  premios.rutina = function() {
-		  var prob_bonos = 0;
-      premios.puntos = parseInt(document.querySelectorAll('.user_reward_points')[0].innerHTML.replace(',',""));
-      premios.temporizadorbono = {};
-      if (document.getElementById("bonus_container_free_points")!== null) {
-        premios.temporizadorbono.texto = document.getElementById("bonus_span_free_points").innerHTML;
-        premios.temporizadorbono.hora = parseInt(premios.temporizadorbono.texto.split(":")[0]);
-        premios.temporizadorbono.minuto = parseInt(premios.temporizadorbono.texto.split(":")[1]);
-        premios.temporizadorbono.segundo = parseInt(premios.temporizadorbono.texto.split(":")[2]);
-        estatus_reporte+=" ("premios.temporizadorbono.texto+")";
-        premios.temporizadorbono.actual = premios.temporizadorbono.hora * 3600 + premios.temporizadorbono.minuto * 60 + premios.temporizadorbono.segundo;
-      } else
-        premios.temporizadorbono.actual = 0;
-        if (premios.temporizadorbono.actual === 0 & tiemporestante()===0) {
-			    if (premios.puntos>4854) {
-				    RedeemRPProduct('free_points_100');
-				    setTimeout(function(){RedeemRPProduct('fp_bonus_1000');},500);
-            estatus_reporte="Activando los bonos de 100RP y 1000% por lanzamiento.";
-			    }
-			    else if (premios.puntos>2800) {
-				    prob_bonos=444/1280;
-				    if (Math.random()<prob_bonos) {
-					    RedeemRPProduct('free_points_100');
-					    setTimeout(function(){RedeemRPProduct('fp_bonus_100');},500);
-					    estatus_reporte="Activando los bonos de 100RP y 100% por lanzamiento.";
-				    } else {
-					    RedeemRPProduct('free_points_100');
-					    setTimeout(function(){RedeemRPProduct('fp_bonus_500');},500);
-					    estatus_reporte="Activando los bonos de 100RP y 500% por lanzamiento.";
-            }
-          }
-			    else if (premios.puntos>2120) {
-				    if (Math.random()<0.4) {
-					    RedeemRPProduct('free_points_100');
-              setTimeout(function(){RedeemRPProduct('fp_bonus_100');},300);
-					    setTimeout(function(){RedeemRPProduct('free_lott_50');},600);
-					    estatus_reporte="Activando los bonos de 100RP, 100% por lanzamiento y 50 TL.";
-			    	}
-				    else {
-					    RedeemRPProduct('free_points_100');
-					    setTimeout(function(){RedeemRPProduct('fp_bonus_100');},500);
-					    estatus_reporte="Activando los bonos de 100RP y 100% por lanzamiento.";
-		    		}
-          }
-    			else if (premios.puntos>1200) {
-			    	estatus_reporte="Activando el bono de 100RP por lanzamiento.";
-				    RedeemRPProduct('free_points_100');
-		    	}
-			    else if (premios.puntos>600) {
-				    estatus_reporte="Activando el bono de 50RP por lanzamiento.";
-				    RedeemRPProduct('free_points_50');
-          }
-			    else if (premios.puntos>120) {
-				    estatus_reporte="Activando el bono de 10RP por lanzamiento.";
-				    RedeemRPProduct('free_points_10');
-			    }
-			    else if (premios.puntos>20) {
-            estatus_reporte="Activando el bono de 1RP por lanzamiento.";
-				    RedeemRPProduct('free_points_1');
-			    }
-		   }
-	   };
+	var estatus_reporte = "Balance a la hora";
+  var temporizadorbonoactual=0;
+  if (document.getElementById("bonus_container_free_points")!== null) {
+      temporizadorbonoactual = 1;
+  }
+	function rutina_premios() {
+	  var prob_bonos = 0;
+    if (temporizadorbonoactual === 0 & tiemporestante()===0) {
+		  if (balance_PR>4854) {
+		    RedeemRPProduct('free_points_100');
+		    setTimeout(function(){RedeemRPProduct('fp_bonus_1000');},500);
+        estatus_reporte="Activando los bonos de 100RP y 1000% por lanzamiento.";
+		  }
+		  else if (balance_PR>2800) {
+		    prob_bonos=444/1280;
+		    if (Math.random()<prob_bonos) {
+			    RedeemRPProduct('free_points_100');
+			    setTimeout(function(){RedeemRPProduct('fp_bonus_100');},500);
+			    estatus_reporte="Activando los bonos de 100RP y 100% por lanzamiento.";
+		    } else {
+			    RedeemRPProduct('free_points_100');
+			    setTimeout(function(){RedeemRPProduct('fp_bonus_500');},500);
+			    estatus_reporte="Activando los bonos de 100RP y 500% por lanzamiento.";
+        }
+      }
+		  else if (balance_PR>2120) {
+		    if (Math.random()<0.4) {
+			    RedeemRPProduct('free_points_100');
+          setTimeout(function(){RedeemRPProduct('fp_bonus_100');},300);
+		      setTimeout(function(){RedeemRPProduct('free_lott_50');},600);
+			    estatus_reporte="Activando los bonos de 100RP, 100% por lanzamiento y 50 TL.";
+			 	}
+			  else {
+			    RedeemRPProduct('free_points_100');
+			    setTimeout(function(){RedeemRPProduct('fp_bonus_100');},500);
+			    estatus_reporte="Activando los bonos de 100RP y 100% por lanzamiento.";
+		  	}
+      }
+    	else if (balance_PR>1200) {
+			 	estatus_reporte="Activando el bono de 100RP por lanzamiento.";
+			  RedeemRPProduct('free_points_100');
+		  }
+			else if (balance_PR>600) {
+			  estatus_reporte="Activando el bono de 50RP por lanzamiento.";
+			  RedeemRPProduct('free_points_50');
+      }
+			else if (balance_PR>120) {
+			  estatus_reporte="Activando el bono de 10RP por lanzamiento.";
+			  RedeemRPProduct('free_points_10');
+			}
+			else if (balance_PR>20) {
+        estatus_reporte="Activando el bono de 1RP por lanzamiento.";
+			  RedeemRPProduct('free_points_1');
+			}
+    }
+  }
 
-	  var autorizado=true;
-	  // datos de esta cuenta
-	  var userID = (((document.getElementById('edit_tab')).getElementsByTagName('p')[0]).getElementsByTagName('span')[1]).innerHTML;
-	  userID = parseInt(userID);
-	  var balance_BTC = parseFloat(document.getElementById('balance').innerHTML);
-	  var balance_PR = parseInt(document.querySelectorAll('.user_reward_points')[0].innerHTML.replace(',',""));
-	  var acct_email=document.getElementById('edit_profile_form_email').value;
-	  var estado="Estoy despierto.";
-	  // verifica si hay captcha u otras condiciones
-	  var hay_captcha=(document.getElementById('captchasnet_free_play_captcha').style.display!=="none")||(document.getElementById('free_play_recaptcha').style.display!=="none");
-	  var timer_running=document.getElementById('multi_acct_same_ip').style.display!=="none";
-	  var bloqueo_ip=document.getElementById('free_play_error').style.display!="none";
-	  var estado_captcha="";
-	  var color_robot="#054908";
-	  if (hay_captcha) {estado_captcha="¡Fokin Captcha! Reportando a mi amo..."; color_robot="#a40000";}
-	  if (timer_running) {estado_captcha="El reloj está corriendo. Reportando a mi amo..."; color_robot="#a40000";}
+	var autorizado=true;
+	// datos de esta cuenta
+	var userID = (((document.getElementById('edit_tab')).getElementsByTagName('p')[0]).getElementsByTagName('span')[1]).innerHTML;
+	userID = parseInt(userID);
+	var balance_BTC = parseFloat(document.getElementById('balance').innerHTML);
+	var balance_PR = parseInt(document.querySelectorAll('.user_reward_points')[0].innerHTML.replace(',',""));
+	var acct_email=document.getElementById('edit_profile_form_email').value;
+	var estado="Estoy despierto.";
+	// verifica si hay captcha u otras condiciones
+	var hay_captcha=(document.getElementById("free_play_captcha_container")!==null);
+	var timer_running=document.getElementById('multi_acct_same_ip').style.display!=="none";
+	var bloqueo_ip=document.getElementById('free_play_error').style.display!="none";
+	var estado_captcha="";
+	var color_robot="#054908";
+	if (hay_captcha) {estado_captcha="¡Fokin Captcha! Reportando a mi amo..."; color_robot="#a40000";}
+	if (timer_running) {estado_captcha="El reloj está corriendo. Reportando a mi amo..."; color_robot="#a40000";}
 	if (!timer_running & !hay_captcha) {
 		estado_captcha="Voy a cobrar el chorrito";
 		if (document.getElementById("bonus_container_free_points")!== null) {estado_captcha+=".";}
